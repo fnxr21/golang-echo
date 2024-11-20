@@ -1,0 +1,35 @@
+services:
+  service:
+    build:
+      dockerfile: ../../service/local/Dockerfile
+      context: .
+    restart: always
+    container_name: service-rms
+    environment:
+      - DB_CHARNTIME=${DB_CHARNTIME}
+      - APP_PORT=5001
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_MST=${DB_MST}
+      - DB_USR=${DB_USR}
+      - DB_IMG=${DB_IMG}
+      - WA_GRAPH=${WA_GRAPH}
+      - WA_BEARER=${WA_BEARER}
+    ports:
+      - "5000:5001"
+      
+  db:
+    image: mysql:8.0 # Consider a specific, well-tested version
+    # restart: always
+    container_name: db-
+    command: --sort_buffer_size=10M # Adjust buffer size based on workload
+    environment:
+      MYSQL_ROOT_PASSWORD: # Use environment variable for security
+      TZ: Asia/Jakarta
+    ports:
+      - "4002:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # Read-only for init script
+      - mysql-data-rms:/var/lib/mysql
